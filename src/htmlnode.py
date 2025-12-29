@@ -1,4 +1,5 @@
-from utils import TextType, VoidTags
+from utils import VoidTags
+
 
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
