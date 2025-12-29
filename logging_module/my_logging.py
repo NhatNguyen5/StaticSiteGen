@@ -13,7 +13,7 @@ from logging_module.file_utils import FileUtilsError, file_verify_path
 from inspect import getframeinfo, stack
 from logging_module.config import LOGGING_ENABLED, LOG_TRACING_ENABLED
 
-calldepth = 2
+calldepth = 3
 
 class logger:
     def __init__(self):

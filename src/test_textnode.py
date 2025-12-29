@@ -1,6 +1,6 @@
 import unittest
 from logging_module.my_logging import logger
-from textnode import TextNode, TextType, text_node_to_html_node, split_nodes_delimiter, extract_markdown_images
+from textnode import TextNode, TextType, text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 
 
 class TestTextNode(unittest.TestCase):
@@ -137,7 +137,7 @@ class TestTextNode(unittest.TestCase):
 
     def test_extract_markdown_images(self):
         log = logger()
-        log.enable = True
+        log.enable = False
         self.longMessage = True
         raw_texts = [
             "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)",
@@ -156,6 +156,32 @@ class TestTextNode(unittest.TestCase):
                     match = extract_markdown_images(text)
             else:
                 match = extract_markdown_images(text)
+                self.assertEqual(match, expected_result, msg=f"Case {case_number} failed")
+
+    def test_extract_markdown_links(self):
+        log = logger()
+        log.enable = True
+        self.longMessage = True
+        raw_texts = [
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+        ]
+
+        expected_results = [
+            [
+                ("to boot dev", "https://www.boot.dev"),
+                ("to youtube", "https://www.youtube.com/@bootdotdev")
+            ]
+        ]
+
+        case_number = 0
+        for text, expected_result in zip(raw_texts, expected_results):
+            case_number += 1
+            log(f"\nRunning case {case_number}")                          
+            if expected_result == "Error":
+                with self.assertRaises(ValueError, msg=f"Case {case_number} failed"):
+                    match = extract_markdown_links(text)
+            else:
+                match = extract_markdown_links(text)
                 self.assertEqual(match, expected_result, msg=f"Case {case_number} failed")
 
 

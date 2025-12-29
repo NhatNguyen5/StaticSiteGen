@@ -59,9 +59,31 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     return new_nodes
 
 def extract_markdown_images(text):
+    log = logger()
+    log.enable = False
+    log("==============================================")
+    log(text)
     ret_extracted = []
-    alt_texts = re.findall(r"\!\[(.*?)\]", text)[2:-1]
-    link_texts = re.findall(r"\(https://.*?\)",text)[1:-1]
+    alt_texts = re.findall(r"\!\[(.*?)\]", text)
+    log(f"{alt_texts}")
+    link_texts = re.findall(r"\((https://.*?)\)",text)
+    log(f"{link_texts}")
     for alt_text, link_text in zip(alt_texts, link_texts):
         ret_extracted.append((alt_text, link_text))
+        log(f"{ret_extracted}")
+    return ret_extracted
+
+def extract_markdown_links(text):
+    log = logger()
+    log.enable = True
+    log("==============================================")
+    log(text)
+    ret_extracted = []
+    alt_texts = re.findall(r"\[(.*?)\]", text)
+    log(f"{alt_texts}")
+    link_texts = re.findall(r"\((https://.*?)\)",text)
+    log(f"{link_texts}")
+    for alt_text, link_text in zip(alt_texts, link_texts):
+        ret_extracted.append((alt_text, link_text))
+        log(f"{ret_extracted}")
     return ret_extracted
