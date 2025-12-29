@@ -1,15 +1,8 @@
-from enum import Enum
-
-class TextType(Enum):
-    TEXT = "text"
-    BOLD = "bold"
-    ITALIC = "italic"
-    CODE = "code"
-    LINK = "link"
-    IMAGE = "image"
+from htmlnode import LeafNode
+from utils import TextType
 
 class TextNode:
-    def __init__(self, text: str, text_type: TextType = TextType.TEXT, url: str = None):
+    def __init__(self, text: str, text_type: TextType, url: str = None):
         self.text = text
         self.text_type = text_type
         self.url = url  # Used for links and images
@@ -25,16 +18,18 @@ class TextNode:
     def __repr__(self):
         return f"TextNode({self.text}, {self.text_type}, {self.url})"
 
-    def render(self) -> str:
-        if self.text_type == TextType.BOLD:
-            return f"<strong>{self.text}</strong>"
-        elif self.text_type == TextType.ITALIC:
-            return f"<em>{self.text}</em>"
-        elif self.text_type == TextType.CODE:
-            return f"<code>{self.text}</code>"
-        elif self.text_type == TextType.LINK:
-            return f'<a href="{self.href}">{self.text}</a>'
-        elif self.text_type == TextType.IMAGE:
-            return f'<img src="{self.href}" alt="{self.alt_text}" />'
-        else:
-            return self.text
+def text_node_to_html_node(text_node):
+    if text_node.text_type == TextType.TEXT:
+        return LeafNode(None, text_node.text)
+    elif text_node.text_type == TextType.BOLD:
+        return LeafNode("strong", text_node.text)
+    elif text_node.text_type == TextType.ITALIC:
+        return LeafNode("em", text_node.text)
+    elif text_node.text_type == TextType.CODE:
+        return LeafNode("code", text_node.text)
+    elif text_node.text_type == TextType.LINK:
+        return LeafNode("a", text_node.text, props={"href": text_node.url})
+    elif text_node.text_type == TextType.IMAGE:
+        return LeafNode("img", "", props={"src": text_node.url, "alt": text_node.text})
+    else:
+        raise ValueError("Unsupported TextType for rendering to HTML.")

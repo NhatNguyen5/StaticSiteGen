@@ -1,3 +1,5 @@
+from utils import TextType, VoidTags
+
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
         self.tag = tag
@@ -29,12 +31,15 @@ class LeafNode(HTMLNode):
         super().__init__(tag, value, children=[], props=props)
 
     def to_html(self):
-        if not self.value:
+        if self.value is None:
             raise ValueError("LeafNode must have a value to render HTML.")
         if not self.tag:
-            return self.value
+            return f"{self.value}"
         # If self.tag exists, generate the HTML string
         props_str = self.props_to_html()
+
+        if self.tag in VoidTags: # Void tags do not have closing tags
+            return f"<{self.tag}{' ' + props_str if props_str else ''}/>"
         return f"<{self.tag}{' ' + props_str if props_str else ''}>{self.value}</{self.tag}>"
     
 class ParentNode(HTMLNode):
