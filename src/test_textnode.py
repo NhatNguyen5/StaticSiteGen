@@ -1,6 +1,6 @@
 import unittest
-from logging_module.my_logging import log
-from textnode import TextNode, TextType, text_node_to_html_node, split_nodes_delimiter
+from logging_module.my_logging import logger
+from textnode import TextNode, TextType, text_node_to_html_node, split_nodes_delimiter, extract_markdown_images
 
 
 class TestTextNode(unittest.TestCase):
@@ -78,6 +78,8 @@ class TestTextNode(unittest.TestCase):
             split_nodes_delimiter(old_nodes, delimiter, text_type)
 
     def test_split_nodes_delimiter(self):
+        log = logger()
+        log.enable = False
         self.longMessage = True
         old_nodes_cases = [
             # Text node containing delimiter                                              #delimiter #new text type
@@ -132,6 +134,30 @@ class TestTextNode(unittest.TestCase):
             else:
                 new_nodes = split_nodes_delimiter(old_nodes, delimiter, text_type)
                 self.assertEqual(new_nodes, expected_node, msg=f"Case {case_number} failed")
+
+    def test_extract_markdown_images(self):
+        log = logger()
+        log.enable = True
+        self.longMessage = True
+        raw_texts = [
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)",
+        ]
+
+        expected_results = [
+            [("image", "https://i.imgur.com/zjjcJKZ.png")]
+        ]
+
+        case_number = 0
+        for text, expected_result in zip(raw_texts, expected_results):
+            case_number += 1
+            log(f"\nRunning case {case_number}")                          
+            if expected_result == "Error":
+                with self.assertRaises(ValueError, msg=f"Case {case_number} failed"):
+                    match = extract_markdown_images(text)
+            else:
+                match = extract_markdown_images(text)
+                self.assertEqual(match, expected_result, msg=f"Case {case_number} failed")
+
 
 if __name__ == "__main__":
     unittest.main()

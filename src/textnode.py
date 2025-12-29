@@ -1,6 +1,7 @@
 from htmlnode import LeafNode
 from utils import TextType
-from logging_module.my_logging import log
+import re
+from logging_module.my_logging import logger
 
 
 class TextNode:
@@ -38,6 +39,8 @@ def text_node_to_html_node(text_node):
                                                   
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
+    log = logger()
+    log.enable = False
     log("==============================================")
     for node in old_nodes:
         log(f"Processing node: {node}")                        
@@ -53,4 +56,12 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 log(f"Processing part {i}: '{part}'")                              
                 new_nodes.append(TextNode(part, text_type if i % 2 == 1 else TextType.TEXT, node.url))  
             log(f"Resulting nodes after split: {new_nodes}")                       
-    return new_nodes                              
+    return new_nodes
+
+def extract_markdown_images(text):
+    ret_extracted = []
+    alt_texts = re.findall(r"\!\[(.*?)\]", text)[2:-1]
+    link_texts = re.findall(r"\(https://.*?\)",text)[1:-1]
+    for alt_text, link_text in zip(alt_texts, link_texts):
+        ret_extracted.append((alt_text, link_text))
+    return ret_extracted
