@@ -30,7 +30,7 @@ class logger:
         timestamp = f"{date} {time}"
         logistic_data = f"[{timestamp}][{self.get_caller_info()}]"
         padded_space = "".rjust(len(logistic_data))
-        message = message.replace("\n", f"\n{padded_space}")  # Ensure single line log entries
+        message = f"{message}".replace("\n", f"\n{padded_space}")  # Ensure single line log entries
         log_entry = f"{logistic_data} {message}\n"
         file_path = file_verify_path("./", "logs")
         if file_path == FileUtilsError.NOT_A_DIRECTORY.value.format(directory="logs"):

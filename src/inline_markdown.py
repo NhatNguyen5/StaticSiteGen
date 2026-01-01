@@ -27,12 +27,16 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     log("==============================================")
     for node in old_nodes:
         log(f"Processing node: {node}")                        
-        if node.text_type != TextType.TEXT:
-            log(f"Skipping node as its type is not TEXT: {node.text_type}")       
+        if node.text_type != TextType.TEXT or node.text.count(delimiter)==0:
+            if node.text_type != TextType.TEXT:
+                log(f"Skipping node as its type is not TEXT: {node.text_type}")
+            elif node.text.count(delimiter)==0:
+                log(f"Skipping node as no delimiter found: {delimiter}")    
             new_nodes.append(node)
         else:                                     
-            if node.text.count(delimiter) < 2:    
-                raise ValueError("Invalid Markdown structure: Delimiter not found in text node.")
+            if node.text.count(delimiter)%2==1:
+                log(f"Error processing: Invalid Markdown structure: Delimiter {delimiter} not in pair in text node.")
+                raise ValueError(f"Invalid Markdown structure: Delimiter {delimiter} not in pair in text node.")
             parts = node.text.split(delimiter) 
             log(f"Splitting node '{node.text}' into parts: {parts}")
             for i, part in enumerate(parts): 
@@ -46,30 +50,18 @@ def extract_markdown_images(text):
     log.enable = False
     log("==============================================")
     log(text)
-    ret_extracted = []
-    alt_texts = re.findall(r"\!\[(.*?)\]", text)
-    log(f"{alt_texts}")
-    link_texts = re.findall(r"\((https://.*?)\)",text)
-    log(f"{link_texts}")
-    for alt_text, link_text in zip(alt_texts, link_texts):
-        ret_extracted.append((alt_text, link_text))
-        log(f"{ret_extracted}")
-    return ret_extracted
+    matches = re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+    log(f"Matches: {matches}")
+    return matches
 
 def extract_markdown_links(text):
     log = logger()
     log.enable = False
     log("==============================================")
     log(text)
-    ret_extracted = []
-    alt_texts = re.findall(r"\[(.*?)\]", text)
-    log(f"{alt_texts}")
-    link_texts = re.findall(r"\((https://.*?)\)",text)
-    log(f"{link_texts}")
-    for alt_text, link_text in zip(alt_texts, link_texts):
-        ret_extracted.append((alt_text, link_text))
-        log(f"{ret_extracted}")
-    return ret_extracted
+    matches = re.findall(r"\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+    log(f"Matches: {matches}")
+    return matches
 
 def split_nodes_image(old_nodes):
     new_nodes = []
@@ -77,14 +69,23 @@ def split_nodes_image(old_nodes):
     log.enable = False
     log("==============================================")
     for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            log(f"Skipping node as its type is not TEXT: {node.text_type}")
+            new_nodes.append(node)
+            continue
         log(f"Processing node: {node}")
         extracted_data = extract_markdown_images(node.text)
+        if not extracted_data:
+            log(f"Skipping node as there's nothing to extract: {node.text_type}")
+            new_nodes.append(node)
+            continue
         remaining_text = node.text
         for alt_text, img_link in extracted_data:
-            log(f"{alt_text}, {img_link}")
+            log(f"Extracted data: {alt_text}, {img_link}")
             text_section = remaining_text.split(f"![{alt_text}]({img_link})", 2)
             new_nodes.append(TextNode(text_section[0], TextType.TEXT))
             new_nodes.append(TextNode(alt_text, TextType.IMAGE, img_link))
+            log(f"Split text: {text_section}")
             remaining_text = text_section[1]
             log(remaining_text)
         if remaining_text != "":
@@ -97,14 +98,24 @@ def split_nodes_link(old_nodes):
     log.enable = False
     log("==============================================")
     for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            log(f"Skipping node as its type is not TEXT: {node.text_type}")
+            new_nodes.append(node)
+            continue
         log(f"Processing node: {node}")
         extracted_data = extract_markdown_links(node.text)
+        if not extracted_data:
+            log(f"Skipping node as there's nothing to extract: {node.text_type}")
+            new_nodes.append(node)
+            continue
         remaining_text = node.text
         for alt_text, link in extracted_data:
             log(f"{alt_text}, {link}")
             text_section = remaining_text.split(f"[{alt_text}]({link})", 2)
             new_nodes.append(TextNode(text_section[0], TextType.TEXT))
             new_nodes.append(TextNode(alt_text, TextType.LINK, link))
+            log(f"new_node: {new_nodes}")
+            log(f"Split text: {text_section}")
             remaining_text = text_section[1]
             log(remaining_text)
         if remaining_text != "":
@@ -112,4 +123,23 @@ def split_nodes_link(old_nodes):
     return new_nodes
 
 def text_to_textnodes(text):
-    pass
+    log = logger()
+    log.enable = True
+    log("\n==============================================")
+    nodes = [TextNode(text, TextType.TEXT)]
+    log(f"Before BOLD: {nodes}")
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    log(f"After BOLD: {nodes}")
+    log(f"Before ITALIC: {nodes}")
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    log(f"After ITALIC: {nodes}")
+    log(f"Before CODE: {nodes}")
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    log(f"After CODE: {nodes}")
+    log(f"Before IMAGE: {nodes}")
+    nodes = split_nodes_image(nodes)
+    log(f"After IMAGE: {nodes}")
+    log(f"Before LINK: {nodes}")
+    nodes = split_nodes_link(nodes)
+    log(f"After LINK: {nodes}")
+    return nodes
