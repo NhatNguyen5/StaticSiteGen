@@ -124,7 +124,7 @@ def split_nodes_link(old_nodes):
 
 def text_to_textnodes(text):
     log = logger()
-    log.enable = True
+    log.enable = False
     log("\n==============================================")
     nodes = [TextNode(text, TextType.TEXT)]
     log(f"Before BOLD: {nodes}")

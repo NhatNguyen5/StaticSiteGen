@@ -19,10 +19,10 @@ class logger:
     def __init__(self):
         self.enable = True
 
-    def __call__(self, msg):
-        self.log(msg)
+    def __call__(self, msg, prt_msg = False):
+        self.log(msg, prt_msg = prt_msg)
 
-    def log(self, message):
+    def log(self, message, prt_msg = False):
         if not LOGGING_ENABLED or not self.enable:
             return
         date = datetime.now().strftime("%Y-%m-%d")
@@ -42,13 +42,8 @@ class logger:
                     log_file.write(f"Log file created on {date} at {time}\n")
             with open(file_name, "a") as log_file:
                 log_file.write(log_entry)
-
-    def log_print(self, log_message, print_message=""):
-        global calldepth
-        calldepth = 3
-        print(log_message) if print_message == "" else print(print_message)
-        self.log(log_message)
-        calldepth = 2
+                if prt_msg:
+                    print(message)
 
     def get_caller_info(self):
         if not LOG_TRACING_ENABLED:
@@ -59,3 +54,4 @@ class logger:
             test_frame = getframeinfo(stack()[_depth][0])
             trace_back_stack.append(f"{test_frame.filename.rsplit('/', 1)[-1]}:{test_frame.lineno}")
         return ">".join(reversed(trace_back_stack))
+    
