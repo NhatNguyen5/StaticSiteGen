@@ -18,7 +18,7 @@ class HTMLNode:
         )
 
     def to_html(self):
-        raise NotImplementedError("to_html method is not implemented yet.")
+        raise NotImplementedError("to_html method is override by LeafNode to_html class.")
 
     def props_to_html(self):
         props_str = ' '.join(f'{key}="{value}"' for key, value in self.props.items())
@@ -57,3 +57,4 @@ class ParentNode(HTMLNode):
         closing_tag = f"</{self.tag}>"
         children_html = ''.join(child.to_html() for child in self.children)
         return f"{opening_tag}{children_html}{closing_tag}"
+    

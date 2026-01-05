@@ -29,7 +29,7 @@ class logger:
         time = datetime.now().strftime("%H:%M:%S")
         timestamp = f"{date} {time}"
         logistic_data = f"[{timestamp}][{self.get_caller_info()}]"
-        padded_space = "".rjust(len(logistic_data))
+        padded_space = "".rjust(len(logistic_data)+1)
         message = f"{message}".replace("\n", f"\n{padded_space}")  # Ensure single line log entries
         log_entry = f"{logistic_data} {message}\n"
         file_path = file_verify_path("./", "logs")

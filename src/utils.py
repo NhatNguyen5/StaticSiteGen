@@ -14,8 +14,8 @@ class BlockType(Enum):
     HEADING = "heading"
     CODE = "code"
     QUOTE = "quote"
-    UL = "unordered_list"
-    OL = "ordered_list"
+    UNORDEREDLIST = "unordered_list"
+    ORDEREDLIST = "ordered_list"
 
 class VoidTags(Enum):
     IMG = "img"
