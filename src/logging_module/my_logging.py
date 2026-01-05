@@ -19,10 +19,10 @@ class logger:
     def __init__(self):
         self.enable = True
 
-    def __call__(self, msg, prt_msg = False):
-        self.log(msg, prt_msg = prt_msg)
+    def __call__(self, msg, prt_msg = False, console_msg = ""):
+        self.log(msg, prt_msg = prt_msg, console_msg = console_msg)
 
-    def log(self, message, prt_msg = False):
+    def log(self, message, prt_msg = False, console_msg = ""):
         if not LOGGING_ENABLED or not self.enable:
             return
         date = datetime.now().strftime("%Y-%m-%d")
@@ -43,7 +43,7 @@ class logger:
             with open(file_name, "a") as log_file:
                 log_file.write(log_entry)
                 if prt_msg:
-                    print(message)
+                    print(message if console_msg == "" else console_msg)
 
     def get_caller_info(self):
         if not LOG_TRACING_ENABLED:

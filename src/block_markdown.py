@@ -54,7 +54,7 @@ def isOrderedList(block):
 
 def markdown_to_html_node(markdown):
     log = logger()
-    log.enable = True
+    log.enable = False
     log("\n==============================================")
     blocks = markdown_to_blocks(markdown)
     children_nodes = []
