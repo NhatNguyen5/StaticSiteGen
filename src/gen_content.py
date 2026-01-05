@@ -20,7 +20,7 @@ def generate_page(from_path, template_path, dest_path, basepath):
     markdown_to_html = markdown_to_html_node(markdown).to_html()
 
     #log(markdown_to_html)
-
+    log(f"basepath: {basepath}")
     full_html = template.replace("{{ Title }}", title)
     full_html = full_html.replace("{{ Content }}", markdown_to_html)
     full_html = full_html.replace("href=\"/", f"href=\"{basepath}")
