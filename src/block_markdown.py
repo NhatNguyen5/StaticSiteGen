@@ -134,7 +134,7 @@ def processParagraph(block):
 
 def toGrandChildren(block):
     log = logger()
-    log.enable = True
+    log.enable = False
     grand_children_nodes = []
     text_nodes = text_to_textnodes(block)
     for node in text_nodes:

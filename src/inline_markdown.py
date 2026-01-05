@@ -145,3 +145,15 @@ def text_to_textnodes(text):
     nodes = split_nodes_link(nodes)
     log(f"After LINK: {nodes}")
     return nodes
+
+def extract_title(markdown):
+    log = logger()
+    log.enable = False
+    log("==============================================")
+    first_line = markdown.strip().split("\n",1)[0]
+    log(f"Processing: {markdown}")
+    log(f"First line: {first_line}")
+    if first_line.startswith("# ") and first_line[2:].strip() != "":
+        return first_line[2:]
+    else:
+        raise ValueError("No header!")
