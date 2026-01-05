@@ -1,17 +1,19 @@
 import os
 import shutil
-from logging_module.my_logging import logger
+import sys
 from build import copyDir
 from gen_content import generate_pages_recursive
 
 def main():
-    if os.path.exists("public"):
-        shutil.rmtree("public")
-    os.mkdir("public")
-    copyDir("static", "public")
+    first_arg = sys.argv[0]
+    basepath = "/" if not first_arg else first_arg
+    if os.path.exists("docs"):
+        shutil.rmtree("docs")
+    os.mkdir("docs")
+    copyDir("static", "docs")
 
     #generate_page("content/index.md", "template.html")
-    generate_pages_recursive("content", "template.html", "public")
+    generate_pages_recursive("content", "template.html", "docs", basepath)
 
 if __name__ == "__main__":
     main()

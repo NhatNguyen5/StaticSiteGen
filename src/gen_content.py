@@ -3,7 +3,7 @@ from logging_module.my_logging import logger
 from block_markdown import markdown_to_html_node
 from inline_markdown import extract_title
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     log = logger()
     log.enable = True
     log("==============================================")
@@ -23,6 +23,8 @@ def generate_page(from_path, template_path, dest_path):
 
     full_html = template.replace("{{ Title }}", title)
     full_html = full_html.replace("{{ Content }}", markdown_to_html)
+    full_html = full_html.replace("href=\"/", f"href=\"{basepath}")
+    full_html = full_html.replace("src=\"/", f"src=\"{basepath}")
 
     #log(full_html)
 
@@ -33,7 +35,7 @@ def generate_page(from_path, template_path, dest_path):
     with open(dest_path, "w") as f:
         f.write(full_html)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     log = logger()
     log.enable = True
     log("==============================================")
@@ -47,10 +49,10 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
             file_name = object.rsplit(".", 1)[0] + ".html"
             dest_path = os.path.join(dest_dir_path, file_name)          
             log(f"Generate file: from {src_path} to {dest_path}")
-            generate_page(src_path, template_path, dest_path)
+            generate_page(src_path, template_path, dest_path, basepath)
             continue
         new_dest_path = os.path.join(dest_dir_path, object)
         os.mkdir(new_dest_path)
         log(f"Generate dir: from {src_path} to {new_dest_path}")
-        generate_pages_recursive(src_path, template_path, new_dest_path)
+        generate_pages_recursive(src_path, template_path, new_dest_path, basepath)
     return 0

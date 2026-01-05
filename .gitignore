@@ -213,4 +213,3 @@ __marimo__/
 .env
 .vscode
 logs/
-public/
